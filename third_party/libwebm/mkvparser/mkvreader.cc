@@ -11,6 +11,13 @@
 
 #include <cassert>
 
+extern "C" {
+#if defined( __MINGW32__ )
+int __cdecl __MINGW_NOTHROW __mingw_fseeko64 (FILE *, __off64_t, int);
+#define fseeko64(fp, offset, whence)  __mingw_fseeko64(fp, offset, whence)
+#endif
+}
+
 namespace mkvparser {
 
 MkvReader::MkvReader() : m_file(NULL), reader_owns_file_(true) {}
@@ -119,7 +126,7 @@ int MkvReader::Read(long long offset, long len, unsigned char* buffer) {
   if (status)
     return -1;  // error
 #else
-  fseeko(m_file, static_cast<off_t>(offset), SEEK_SET);
+  fseeko64(m_file, static_cast<__off64_t>(offset), SEEK_SET);
 #endif
 
   const size_t size = fread(buffer, 1, len, m_file);

@@ -14,6 +14,13 @@
 #include <share.h>  // for _SH_DENYWR
 #endif
 
+extern "C" {
+#if defined( __MINGW32__ )
+int __cdecl __MINGW_NOTHROW __mingw_fseeko64 (FILE *, __off64_t, int);
+#define fseeko64(fp, offset, whence)  __mingw_fseeko64(fp, offset, whence)
+#endif
+}
+
 namespace mkvmuxer {
 
 MkvWriter::MkvWriter() : file_(NULL), writer_owns_file_(true) {}
@@ -79,7 +86,7 @@ int32 MkvWriter::Position(int64 position) {
 #ifdef _MSC_VER
   return _fseeki64(file_, position, SEEK_SET);
 #else
-  return fseeko(file_, static_cast<off_t>(position), SEEK_SET);
+  return fseeko64(file_, static_cast<__off64_t>(position), SEEK_SET);
 #endif
 }
 

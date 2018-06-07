@@ -31,7 +31,7 @@ typedef int64_t FileOffset;
 /* MinGW uses f{seek,tell}o64 for large files. */
 #define fseeko fseeko64
 #define ftello ftello64
-typedef off64_t FileOffset;
+typedef int64_t FileOffset;
 #elif CONFIG_OS_SUPPORT
 typedef off_t FileOffset;
 /* Use 32-bit file operations in WebM file format when building ARM
